@@ -8,7 +8,7 @@ conn = sqlite3.connect('chucksOnEbay.db')
 c = conn.cursor()
 
 def create_table():
-	c.execute("CREATE TABLE IF NOT EXISTS chucks(list_title TEXT, date_sold TEXT, price TEXT)")
+	c.execute("CREATE TABLE IF NOT EXISTS chucks(list_title TEXT, date_sold TEXT, price REAL)")
 
 def data_entry():
 	c.execute("INSERT INTO chucks (list_title, date_sold, price) VALUES (?, ?, ?)",
@@ -30,7 +30,7 @@ page_soup = soup(page_html, "html.parser")
 containers = page_soup.findAll("div",{"class":"itmcd"})
 
 # Create table, comment out after making it the first time
-# create_table()
+create_table()
 
 for container in containers:
 	# extract item title from html
@@ -43,7 +43,7 @@ for container in containers:
 	# extract price
 	price_container = container.find("span", {"class":"bidsold"}) 
 	# strip data to clean up and fix formatting in csv
-	item_price = price_container.text.strip()
+	item_price = price_container.text.replace("$", "").strip()
 
 	#print output in terminal
 	print("Item Title: " + item_title)
