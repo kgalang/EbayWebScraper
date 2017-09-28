@@ -1,5 +1,6 @@
 #imports
 import sqlite3
+import re
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 
@@ -42,16 +43,23 @@ for container in containers:
 
 	# extract price
 	price_container = container.find("span", {"class":"bidsold"}) 
-	# strip data to clean up and fix formatting in csv
+	# strip data to clean up and fix formatting
 	item_price = price_container.text.replace("$", "").strip()
-
-	#print output in terminal
-	print("Item Title: " + item_title)
-	print("Item Date: " + item_date)
-	print("Item Price: " + item_price)
+	#if has "\xa0to " get the average
+	if bool(re.search("\xa0to ", item_price)) == False:
+		item_price = item_price
+	elif bool(re.search("\xa0to ", item_price)) == True:
+		arr = item_price.split("\xa0to ")
+		p1 = float(arr[0])
+		p2 = float(arr[1])
+		item_price = (p1 + p2) / 2.00
 
 	#write outputs in csv file and format accordingly
 	data_entry()
+
 # always close csv file when done writing it
 c.close()
 conn.close()
+
+#print output in terminal to know that it went all the way through
+print("check the database!")
