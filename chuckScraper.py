@@ -9,11 +9,11 @@ conn = sqlite3.connect('chucksOnEbay.db')
 c = conn.cursor()
 
 def create_table():
-	c.execute("CREATE TABLE IF NOT EXISTS chucks(list_title TEXT, date_sold TEXT, price REAL)")
+	c.execute("CREATE TABLE IF NOT EXISTS chucks(id REAL, list_title TEXT, date_sold TEXT, price REAL)")
 
 def data_entry():
-	c.execute("INSERT INTO chucks (list_title, date_sold, price) VALUES (?, ?, ?)",
-		(item_title, item_date, item_price))
+	c.execute("INSERT INTO chucks (id, list_title, date_sold, price) VALUES (?, ?, ?, ?)",
+		(item_id, item_title, item_date, item_price))
 	conn.commit()
 
 my_url = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&_dcat=15709&US%2520Shoe%2520Size%2520%2528Men%2527s%2529=8%7C8%252E5%7C9%7C9%252E5%7C10%7C10%252E5%7C11%7C11%252E5%7C12%7C13&Product%2520Line=Chuck%2520Taylor%2520All%2520Star&Brand=Chuck%2520Taylor%7CConverse&LH_ItemCondition=1000&LH_Complete=1&LH_Sold=1&_nkw=converse+chuck+taylor+2&rt=nc&LH_BIN=1'
@@ -34,6 +34,10 @@ containers = page_soup.findAll("div",{"class":"itmcd"})
 create_table()
 
 for container in containers:
+	#extract unique identifier
+	#all ints in python 3 are long longs
+	item_id = int(container.get("iid"))
+
 	# extract item title from html
 	item_title = container.h3.a.text
 	
@@ -63,3 +67,4 @@ conn.close()
 
 #print output in terminal to know that it went all the way through
 print("check the database!")
+
