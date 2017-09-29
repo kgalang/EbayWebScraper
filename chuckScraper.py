@@ -16,6 +16,14 @@ def data_entry():
 		(item_id, item_title, item_date, item_price))
 	conn.commit()
 
+def no_duplicates(x):
+	c.execute("SELECT id FROM chucks WHERE id = ?", (x,))
+	data = c.fetchone()
+	if data is None:
+		return 0
+	else:
+		return 1
+
 my_url = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&_dcat=15709&US%2520Shoe%2520Size%2520%2528Men%2527s%2529=8%7C8%252E5%7C9%7C9%252E5%7C10%7C10%252E5%7C11%7C11%252E5%7C12%7C13&Product%2520Line=Chuck%2520Taylor%2520All%2520Star&Brand=Chuck%2520Taylor%7CConverse&LH_ItemCondition=1000&LH_Complete=1&LH_Sold=1&_nkw=converse+chuck+taylor+2&rt=nc&LH_BIN=1'
 
 #Opening connection and grabbing the page
@@ -37,6 +45,10 @@ for container in containers:
 	#extract unique identifier
 	#all ints in python 3 are long longs
 	item_id = int(container.get("iid"))
+
+	#if item_id exists, loop to next entry
+	if no_duplicates(item_id) == 1:
+		continue
 
 	# extract item title from html
 	item_title = container.h3.a.text
