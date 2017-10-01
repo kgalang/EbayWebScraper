@@ -1,11 +1,14 @@
-#imports
+"""AN EXAMPLE OF PYTHON SCRIPT TO AUTOMATE EBAY WEBSCRAPING WITH CRONTAB"""
+
+#!/usr/bin/env python
+
 import sqlite3
 import re
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 
 #DECLARE ALL SQL FUNCTIONS:
-conn = sqlite3.connect('chucksOnEbay.db')
+conn = sqlite3.connect('/path/to/directory/chucksOnEbay.db')
 c = conn.cursor()
 
 def create_table():
