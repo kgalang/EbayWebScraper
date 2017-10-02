@@ -9,7 +9,7 @@ conn = sqlite3.connect('chucksOnEbay.db')
 c = conn.cursor()
 
 def create_table():
-	c.execute("CREATE TABLE IF NOT EXISTS chucks(id REAL, list_title TEXT, date_sold TEXT, price REAL)")
+	c.execute("CREATE TABLE IF NOT EXISTS chucks(id TEXT, list_title TEXT, date_sold TEXT, price REAL)")
 
 def data_entry():
 	c.execute("INSERT INTO chucks (id, list_title, date_sold, price) VALUES (?, ?, ?, ?)",
@@ -36,7 +36,7 @@ uClient.close()
 # html parsing
 page_soup = soup(page_html, "html.parser")
 # grabs each sale
-containers = page_soup.findAll("div",{"class":"itmcd"})
+containers = page_soup.findAll("li",{"class":"sresult"})
 
 # Create table, comment out after making it the first time
 create_table()
@@ -44,7 +44,7 @@ create_table()
 for container in containers:
 	#extract unique identifier
 	#all ints in python 3 are long longs
-	item_id = int(container.get("iid"))
+	item_id = container.get("id")
 
 	#if item_id exists, loop to next entry
 	if no_duplicates(item_id) == 1:
