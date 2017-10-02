@@ -24,6 +24,13 @@ def no_duplicates(x):
 	else:
 		return 1
 
+def date_format(date):
+	months = {"Jan" : '01', "Feb" : '02', "Mar" : '03', "Apr" : '04', "May" : '05', "Jun" : '06', "Jul" : '07', "Aug" : '08', "Sep" : '09', "Oct" : '10', "Nov" : '11', "Dec" : '12'}
+	month = str(date[:3])
+	day = str(date[4:6])
+	month_num = months[month]
+	return month_num + "/" + day
+
 my_url = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&_dcat=15709&US%2520Shoe%2520Size%2520%2528Men%2527s%2529=8%7C8%252E5%7C9%7C9%252E5%7C10%7C10%252E5%7C11%7C11%252E5%7C12%7C13&Product%2520Line=Chuck%2520Taylor%2520All%2520Star&Brand=Chuck%2520Taylor%7CConverse&LH_ItemCondition=1000&LH_Complete=1&LH_Sold=1&_nkw=converse+chuck+taylor+2&rt=nc&LH_BIN=1'
 
 #Opening connection and grabbing the page
@@ -55,7 +62,8 @@ for container in containers:
 	
 	# extract date and time sold from html
 	date_container = container.find("span", {"class":"lcol"})
-	item_date = date_container.text
+	date = date_container.text[:6]
+	item_date = date_format(date).strip()
 
 	# extract price
 	price_container = container.find("span", {"class":"bidsold"}) 
@@ -78,5 +86,5 @@ c.close()
 conn.close()
 
 #print output in terminal to know that it went all the way through
-#print("check the database!")
+print("check the database!")
 
