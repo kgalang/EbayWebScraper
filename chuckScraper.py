@@ -31,7 +31,7 @@ def date_format(date):
 	month_num = months[month]
 	return month_num + "/" + day
 
-my_url = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&_dcat=15709&US%2520Shoe%2520Size%2520%2528Men%2527s%2529=8%7C8%252E5%7C9%7C9%252E5%7C10%7C10%252E5%7C11%7C11%252E5%7C12%7C13&Product%2520Line=Chuck%2520Taylor%2520All%2520Star&Brand=Chuck%2520Taylor%7CConverse&LH_ItemCondition=1000&LH_Complete=1&LH_Sold=1&_nkw=converse+chuck+taylor+2&rt=nc&LH_BIN=1'
+my_url = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&LH_Complete=1&LH_Sold=1&LH_ItemCondition=1000&_nkw=converse%20chuck%20taylor%202&_dcat=15709&US%2520Shoe%2520Size%2520%2528Men%2527s%2529=11&rt=nc&_trksid=p2045573.m1684'
 
 #Opening connection and grabbing the page
 uClient = uReq(my_url)
@@ -42,8 +42,12 @@ uClient.close()
 
 # html parsing
 page_soup = soup(page_html, "html.parser")
+
+#find the first of this only because Ebay sometimes adds suggested results that don't match right away
+matches = page_soup.find("ul", {"class": "gv-ic"})
+
 # grabs each sale
-containers = page_soup.findAll("li",{"class":"sresult"})
+containers = matches.findAll("li",{"class":"sresult"})
 
 # Create table, comment out after making it the first time
 create_table()
