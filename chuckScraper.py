@@ -43,6 +43,10 @@ uClient.close()
 # html parsing
 page_soup = soup(page_html, "html.parser")
 
+#class nllclt is only there when there are 0 results
+if bool(page_soup.find("span", {"class": "nllclt"})) == True
+	return 0
+
 #find the first of this only because Ebay sometimes adds suggested results that don't match right away
 matches = page_soup.find("ul", {"class": "gv-ic"})
 
