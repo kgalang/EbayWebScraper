@@ -13,7 +13,7 @@ def create_table():
 
 def data_entry():
 	c.execute("INSERT INTO chucks (id, list_title, shoe_size, date_sold, price) VALUES (?, ?, ?, ?, ?)",
-		(item_id, item_title, size, item_date, item_price))
+		(item_id, item_title, shoe_size, item_date, item_price))
 	conn.commit()
 
 def no_duplicates(x):
@@ -48,8 +48,8 @@ for size in sizes:
 	page_soup = soup(page_html, "html.parser")
 
 	#class nllclt is only there when there are 0 results
-	#if bool(page_soup.find("span", {"class": "nllclt"})) == True:
-		
+	if bool(page_soup.find("span", {"class": "nllclt"})) == True:
+		continue
 
 	#find the first of this only because Ebay sometimes adds suggested results that don't match right away
 	matches = page_soup.find("ul", {"class": "gv-ic"})
@@ -89,6 +89,10 @@ for size in sizes:
 			p1 = float(arr[0])
 			p2 = float(arr[1])
 			item_price = (p1 + p2) / 2.00
+
+		#reformat half sizes before entering
+		#if "%252E" in size == True:
+		shoe_size = size.replace("%252E", ".")
 
 		#write outputs in csv file and format accordingly
 		data_entry()
