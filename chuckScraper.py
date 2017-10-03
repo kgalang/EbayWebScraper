@@ -4,16 +4,16 @@ import re
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 
-#DECLARE ALL SQL FUNCTIONS:
+#DECLARE SQL:
 conn = sqlite3.connect('chucksOnEbay.db')
 c = conn.cursor()
 
 def create_table():
-	c.execute("CREATE TABLE IF NOT EXISTS chucks(id TEXT, list_title TEXT, date_sold TEXT, price REAL)")
+	c.execute("CREATE TABLE IF NOT EXISTS chucks(id TEXT, list_title TEXT, shoe_size TEXT, date_sold TEXT, price REAL)")
 
 def data_entry():
-	c.execute("INSERT INTO chucks (id, list_title, date_sold, price) VALUES (?, ?, ?, ?)",
-		(item_id, item_title, item_date, item_price))
+	c.execute("INSERT INTO chucks (id, list_title, shoe_size, date_sold, price) VALUES (?, ?, ?, ?, ?)",
+		(item_id, item_title, size, item_date, item_price))
 	conn.commit()
 
 def no_duplicates(x):
@@ -31,7 +31,11 @@ def date_format(date):
 	month_num = months[month]
 	return month_num + "/" + day
 
-my_url = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&LH_Complete=1&LH_Sold=1&LH_ItemCondition=1000&_nkw=converse%20chuck%20taylor%202&_dcat=15709&US%2520Shoe%2520Size%2520%2528Men%2527s%2529=11&rt=nc&_trksid=p2045573.m1684'
+sizes = ['5','5%252E5','6','6%252E5','7','7%252E5','8','8%252E5','9','9%252E5','10','10%252E5','11','11%252E5','12','12%252E5','13','13%252E5','14','14%252E5']
+
+size = sizes[11]
+
+my_url = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&LH_Complete=1&LH_Sold=1&LH_ItemCondition=1000&_nkw=converse%20chuck%20taylor%202&_dcat=15709&US%2520Shoe%2520Size%2520%2528Men%2527s%2529=' + sizes[11] + '&rt=nc&_trksid=p2045573.m1684'
 
 #Opening connection and grabbing the page
 uClient = uReq(my_url)
@@ -44,8 +48,8 @@ uClient.close()
 page_soup = soup(page_html, "html.parser")
 
 #class nllclt is only there when there are 0 results
-if bool(page_soup.find("span", {"class": "nllclt"})) == True
-	return 0
+#if bool(page_soup.find("span", {"class": "nllclt"})) == True:
+	
 
 #find the first of this only because Ebay sometimes adds suggested results that don't match right away
 matches = page_soup.find("ul", {"class": "gv-ic"})
@@ -89,7 +93,7 @@ for container in containers:
 	#write outputs in csv file and format accordingly
 	data_entry()
 
-# always close csv file when done writing it
+# always close db connection when done writing it
 c.close()
 conn.close()
 
