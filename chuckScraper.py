@@ -9,7 +9,7 @@ conn = sqlite3.connect('chucksOnEbay.db')
 c = conn.cursor()
 
 def create_table():
-	c.execute("CREATE TABLE IF NOT EXISTS chucks (id TEXT, list_title TEXT, shoe_size TEXT, date_sold TEXT, price REAL)")
+	c.execute("CREATE TABLE IF NOT EXISTS chucks (id TEXT, list_title TEXT, shoe_size REAL, date_sold TEXT, price REAL)")
 
 def data_entry():
 	c.execute("INSERT INTO chucks (id, list_title, shoe_size, date_sold, price) VALUES (?, ?, ?, ?, ?)",
@@ -91,8 +91,9 @@ for size in sizes:
 			item_price = (p1 + p2) / 2.00
 
 		#reformat half sizes before entering
-		#if "%252E" in size == True:
 		shoe_size = size.replace("%252E", ".")
+
+		float(shoe_size)
 
 		#write outputs in csv file and format accordingly
 		data_entry()
