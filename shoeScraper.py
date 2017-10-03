@@ -4,7 +4,7 @@ import re
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 
-shoe_search = input('What shoe? ')
+shoe_search = input('What shoe would you like to search for? ')
 SQL_name = shoe_search.replace(" ", "_")
 URL_shoe = shoe_search.replace(" ", "%20")
 
