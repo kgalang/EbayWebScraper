@@ -1,7 +1,8 @@
 #imports
 import sqlite3
 import re
-from urllib.request import urlopen as uReq
+import requests
+
 from bs4 import BeautifulSoup as soup
 
 #DECLARE SQL:
@@ -31,21 +32,24 @@ def date_format(date):
 	month_num = months[month]
 	return month_num + "/" + day
 
-sizes = ['5','5%252E5','6','6%252E5','7','7%252E5','8','8%252E5','9','9%252E5','10','10%252E5','11','11%252E5','12','12%252E5','13','13%252E5','14','14%252E5']
+#sizes = ['5','5%252E5','6','6%252E5','7','7%252E5','8','8%252E5','9','9%252E5','10','10%252E5','11','11%252E5','12','12%252E5','13','13%252E5','14','14%252E5']
+sizes = ["10"]
 
 for size in sizes:
 
 	my_url = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&LH_Complete=1&LH_Sold=1&LH_ItemCondition=1000&_nkw=converse%20chuck%20taylor%202&_dcat=15709&US%2520Shoe%2520Size%2520%2528Men%2527s%2529=' + size + '&rt=nc&_trksid=p2045573.m1684'
+	url_no_size = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&LH_Complete=1&LH_Sold=1&LH_ItemCondition=1000&_dcat=15709&_nkw=converse+chuck+taylor+2'
+	r = requests.get(my_url)
+	# #Opening connection and grabbing the page
+	# uClient = uReq(my_url)
+	# #make var before .read() so you don't lose the data
+	# page_html = uClient.read()
+	# #close the client because it is an open connection
+	# uClient.close()
 
-	#Opening connection and grabbing the page
-	uClient = uReq(my_url)
-	#make var before .read() so you don't lose the data
-	page_html = uClient.read()
-	#close the client because it is an open connection
-	uClient.close()
 
 	# html parsing
-	page_soup = soup(page_html, "html.parser")
+	page_soup = soup(r.content, "html.parser")
 
 	#class nllclt is only there when there are 0 results
 	if bool(page_soup.find("span", {"class": "nllclt"})) == True:
