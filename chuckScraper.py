@@ -33,24 +33,23 @@ def date_format(date):
 	return month_num + "/" + day
 
 #sizes = ['5','5%252E5','6','6%252E5','7','7%252E5','8','8%252E5','9','9%252E5','10','10%252E5','11','11%252E5','12','12%252E5','13','13%252E5','14','14%252E5']
-size = 0
+shoe_size = 5.0
 
-while size < 15:
+while shoe_size < 15.0:
 
 	my_url = 'https://www.ebay.com/sch/i.html'
 
-params = {
-	'_from' : 'R40',
-	'_sacat' : 0,
-	'LH_Complete' : 1,
-	'LH_Sold' : 1,
-	'LH_ItemCondition' : 1000,
-	'_nkw' : 'converse chuck taylor 2',
-	'_dcat' : 15709,
-	"US Shoe Size Men's" : 10,
-	'rt' : 'nc',
-	'_trksid' : 'p2045573.m1684'
-}
+	params = {
+		'_from' : 'R40',
+		'_sacat' : 0,
+		'LH_Complete' : 1,
+		'LH_Sold' : 1,
+		'LH_ItemCondition' : 1000,
+		'_nkw' : 'converse chuck taylor 2',
+		'_dcat' : 15709,
+		"US%20Shoe%20Size%20%28Men%27s%29" : shoe_size,
+		'rt' : 'nc',
+	}
 	r = requests.get(my_url, params=params)
 
 	# html parsing
@@ -99,13 +98,13 @@ params = {
 			p2 = float(arr[1])
 			item_price = (p1 + p2) / 2.00
 
-		#reformat half sizes before entering
-		shoe_size = size.replace("%252E", ".")
 
 		float(shoe_size)
 
 		#write outputs in csv file and format accordingly
 		data_entry()
+
+		shoe_size += 0.5
 
 # always close db connection when done writing it
 c.close()
