@@ -1,12 +1,11 @@
 #imports
 import sqlite3
 import re
-from urllib.request import urlopen as uReq
+import requests
 from bs4 import BeautifulSoup as soup
 
 shoe_search = input('What shoe would you like to search for? ')
 SQL_name = shoe_search.replace(" ", "_")
-URL_shoe = shoe_search.replace(" ", "%20")
 
 #DECLARE SQL:
 conn = sqlite3.connect('shoes_on_ebay.db')
@@ -35,21 +34,33 @@ def date_format(date):
 	month_num = months[month]
 	return month_num + "/" + day
 
-sizes = ['5','5%252E5','6','6%252E5','7','7%252E5','8','8%252E5','9','9%252E5','10','10%252E5','11','11%252E5','12','12%252E5','13','13%252E5','14','14%252E5']
+sizes = []
+
+for size in range(5,15):
+	sizes.append(str(size))
+	half_size = str(size) + '%2E5'
+	sizes.append(half_size)
 
 for size in sizes:
 
-	my_url = 'https://www.ebay.com/sch/i.html?_from=R40&_sacat=0&LH_Complete=1&LH_Sold=1&LH_ItemCondition=1000&_nkw=' + URL_shoe + '&_dcat=15709&US%2520Shoe%2520Size%2520%2528Men%2527s%2529=' + size + '&rt=nc&_trksid=p2045573.m1684'
+	my_url = 'https://www.ebay.com/sch/i.html'
 
-	#Opening connection and grabbing the page
-	uClient = uReq(my_url)
-	#make var before .read() so you don't lose the data
-	page_html = uClient.read()
-	#close the client because it is an open connection
-	uClient.close()
+	params = {
+		'_from' : 'R40',
+		'_sacat' : 0,
+		'LH_Complete' : 1,
+		'LH_Sold' : 1,
+		'LH_ItemCondition' : 1000,
+		'_nkw' : shoe_search,
+		'_dcat' : 15709,
+		"US%20Shoe%20Size%20%28Men%27s%29" : size,
+		'rt' : 'nc',
+	}
+
+	r = requests.get(my_url, params=params)
 
 	# html parsing
-	page_soup = soup(page_html, "html.parser")
+	page_soup = soup(r.text, "html.parser")
 
 	#class nllclt is only there when there are 0 results
 	if bool(page_soup.find("span", {"class": "nllclt"})) == True:
@@ -95,7 +106,7 @@ for size in sizes:
 			item_price = (p1 + p2) / 2.00
 
 		#reformat half sizes before entering
-		shoe_size = size.replace("%252E", ".")
+		shoe_size = size.replace("%2E", ".")
 
 		float(shoe_size)
 
