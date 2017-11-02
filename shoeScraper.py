@@ -31,6 +31,12 @@ def date_format(date):
 	month_num = months[month]
 	return month_num + "/" + day
 
+def pricesFromDB():
+	c.execute("SELECT price FROM " + SQL_name + " WHERE shoe_size >= " + str(sizeMin) + " AND shoe_size <= " + str(sizeMax))
+	prices = c.fetchall()
+	return prices
+
+
 shoe_search = input('What shoe would you like to search for? ')
 SQL_name = shoe_search.replace(" ", "_")
 
@@ -137,6 +143,7 @@ for size in paramSizes:
 		price_container = container.find("span", {"class":"bidsold"}) 
 		# strip data to clean up and fix formatting
 		item_price = price_container.text.replace("$", "").strip()
+		item_price = item_price.replace(",", "")
 		#if has "\xa0to " get the average
 		if bool(re.search("\xa0to ", item_price)) == False:
 			item_price = item_price
@@ -154,10 +161,19 @@ for size in paramSizes:
 		#write outputs in csv file and format accordingly
 		data_entry()
 
+
+prices = pricesFromDB()
+priceSum = 0.00;
+
+for i in range(0, len(prices)):
+	priceSum += prices[i][0]
+
+avgPrice = round(priceSum/len(prices), 2)
+print("The Ebay results for " + shoe_search + " has an average selling point of $" + str(avgPrice) + " for sizes " + str(sizeMin) + " through " + str(sizeMax))
+
+
 # always close db connection when done writing it
 c.close()
 conn.close()
 
-#print output in terminal to know that it went all the way through
-print("check the database!")
 
