@@ -169,7 +169,13 @@ for i in range(0, len(prices)):
 	priceSum += prices[i][0]
 
 avgPrice = round(priceSum/len(prices), 2)
-print("The Ebay results for " + shoe_search + " has an average selling point of $" + str(avgPrice) + " for sizes " + str(sizeMin) + " through " + str(sizeMax))
+if (sizeMax == sizeMin):
+	#single shoe size
+	print("The Ebay results for " + shoe_search + " has an average selling point of $" + str(avgPrice) + " for size " + str(sizeMin))
+
+else:
+	#range
+	print("The Ebay results for " + shoe_search + " has an average selling point of $" + str(avgPrice) + " for sizes " + str(sizeMin) + " through " + str(sizeMax))
 
 
 # always close db connection when done writing it
