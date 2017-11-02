@@ -7,6 +7,36 @@ from bs4 import BeautifulSoup as soup
 shoe_search = input('What shoe would you like to search for? ')
 SQL_name = shoe_search.replace(" ", "_")
 
+sizePrompted = input('''
+	Would you like to search for a certain size?
+	(enter "no" to search all sizes)
+	(enter "11" to search for size 11)
+	(enter "9.5 to 10.5" to search sizes 9.5, 10, and 10.5)
+	''')
+
+anyButNumbersAndPeriod = re.compile("([^0-9.])")
+
+if (sizePrompted.lower() == "no"):
+	sizeMin = 5
+	sizeMax = 15
+
+	print("searching for all sizes 5 through 14")
+elif "-" in sizePrompted and not anyButNumbersAndPeriod.match(sizePrompted):
+	#this is a range
+	sizePrompted = sizePrompted.split("-");
+	sizeMin = float(sizePrompted[0]);
+	sizeMax = float(sizePrompted[1]);
+
+	print("searching for sizes " + sizePrompted[0] + " through " + sizePrompted[1])
+elif not anyButNumbersAndPeriod.match(sizePrompted):
+	#single size
+	sizeMin = float(sizePrompted)
+	sizeMax = sizeMin
+
+	print("searching for size " + sizePrompted)
+else:
+	print("Please enter a valid size\n")
+
 #DECLARE SQL:
 conn = sqlite3.connect('shoes_on_ebay.db')
 c = conn.cursor()
@@ -34,9 +64,10 @@ def date_format(date):
 	month_num = months[month]
 	return month_num + "/" + day
 
+
 sizes = []
 
-for size in range(5,15):
+for size in range(5,14):
 	sizes.append(str(size))
 	half_size = str(size) + '%2E5'
 	sizes.append(half_size)
