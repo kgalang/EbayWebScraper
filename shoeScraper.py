@@ -4,6 +4,33 @@ import re
 import requests
 from bs4 import BeautifulSoup as soup
 
+#DECLARE SQL:
+conn = sqlite3.connect('shoes_on_ebay.db')
+c = conn.cursor()
+
+def create_table():
+	c.execute("CREATE TABLE IF NOT EXISTS " + SQL_name + " (id TEXT, list_title TEXT, shoe_size REAL, date_sold TEXT, price REAL)")
+
+def data_entry():
+	c.execute("INSERT INTO " + SQL_name + " (id, list_title, shoe_size, date_sold, price) VALUES (?, ?, ?, ?, ?)",
+		(item_id, item_title, shoe_size, item_date, item_price))
+	conn.commit()
+
+def no_duplicates(x):
+	c.execute("SELECT id FROM " + SQL_name + " WHERE id = ?", (x,))
+	data = c.fetchone()
+	if data is None:
+		return 0
+	else:
+		return 1
+
+def date_format(date):
+	months = {"Jan" : '01', "Feb" : '02', "Mar" : '03', "Apr" : '04', "May" : '05', "Jun" : '06', "Jul" : '07', "Aug" : '08', "Sep" : '09', "Oct" : '10', "Nov" : '11', "Dec" : '12'}
+	month = str(date[:3])
+	day = str(date[4:6])
+	month_num = months[month]
+	return month_num + "/" + day
+
 shoe_search = input('What shoe would you like to search for? ')
 SQL_name = shoe_search.replace(" ", "_")
 
@@ -37,42 +64,25 @@ elif not anyButNumbersAndPeriod.match(sizePrompted):
 else:
 	print("Please enter a valid size\n")
 
-#DECLARE SQL:
-conn = sqlite3.connect('shoes_on_ebay.db')
-c = conn.cursor()
-
-def create_table():
-	c.execute("CREATE TABLE IF NOT EXISTS " + SQL_name + " (id TEXT, list_title TEXT, shoe_size REAL, date_sold TEXT, price REAL)")
-
-def data_entry():
-	c.execute("INSERT INTO " + SQL_name + " (id, list_title, shoe_size, date_sold, price) VALUES (?, ?, ?, ?, ?)",
-		(item_id, item_title, shoe_size, item_date, item_price))
-	conn.commit()
-
-def no_duplicates(x):
-	c.execute("SELECT id FROM " + SQL_name + " WHERE id = ?", (x,))
-	data = c.fetchone()
-	if data is None:
-		return 0
-	else:
-		return 1
-
-def date_format(date):
-	months = {"Jan" : '01', "Feb" : '02', "Mar" : '03', "Apr" : '04', "May" : '05', "Jun" : '06', "Jul" : '07', "Aug" : '08', "Sep" : '09', "Oct" : '10', "Nov" : '11', "Dec" : '12'}
-	month = str(date[:3])
-	day = str(date[4:6])
-	month_num = months[month]
-	return month_num + "/" + day
-
-
 sizes = []
+#add minSize through maxSize to sizes []
+i = sizeMin;
+while (i <= sizeMax):
+	sizes.append(i);
+	i += 0.5
 
-for size in range(5,14):
-	sizes.append(str(size))
-	half_size = str(size) + '%2E5'
-	sizes.append(half_size)
-
+#format sizes for params
+paramSizes = []
 for size in sizes:
+	size = str(size)
+	if ".0" in size:
+		paramSize = size.replace(".0", "")
+	elif ".5" in size:
+		paramSize = size.replace(".5", "%2E5")
+
+	paramSizes.append(paramSize)
+
+for size in paramSizes:
 
 	my_url = 'https://www.ebay.com/sch/i.html'
 
